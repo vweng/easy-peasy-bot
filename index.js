@@ -97,14 +97,14 @@ bot.api.users.list({}, function(err, list){
 	}
 	if (msg) {
     bot.api.im.open({
-        user: 'U09K7GCDT'
+        user: user.id // 'U09K7GCDT'
     }, (err, res) => {
         if (err) {
             bot.botkit.log('Failed to open IM with user', err)
         }
         console.log(res);
         bot.startConversation({
-            user: 'U09K7GCDT',
+            user: user.id // 'U09K7GCDT',
             channel: res.channel.id,
             text: ''
         }, (err, convo) => {
