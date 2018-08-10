@@ -85,7 +85,7 @@ bot.startRTM();
 bot.api.users.list({}, function(err, list){
   if (list.ok)
     list.members.forEach(function(user){
-	if (user.deleted || user.name.endsWith('bot')) return;
+	if (user.deleted || user.name == 'github' || user.name.endsWith('bot')) return;
 	//console.log(user);
 	
 	var msg = '';
@@ -100,11 +100,11 @@ bot.api.users.list({}, function(err, list){
         user: user.id // 'U09K7GCDT'
     }, (err, res) => {
         if (err) {
-            bot.botkit.log('Failed to open IM with user', err)
+            bot.botkit.log('Failed to open IM with user: '+user.name, err)
         }
         console.log(res);
         bot.startConversation({
-            user: user.id // 'U09K7GCDT',
+            user: user.id, // 'U09K7GCDT',
             channel: res.channel.id,
             text: ''
         }, (err, convo) => {
