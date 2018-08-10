@@ -75,22 +75,58 @@ controller.on('rtm_close', function (bot) {
     // you may want to attempt to re-open
 });
 
-
 /**
  * Core bot logic goes here!
  */
 // BEGIN EDITING HERE!
+var bot = controller.spawn({token: process.env.TOKEN});
+bot.startRTM();
 
+bot.api.users.list({}, function(err, list){
+  if (list.ok)
+    list.members.forEach(function(user){
+	if (user.deleted || user.name.endsWith('bot')) return;
+	//console.log(user);
+	
+	var msg = '';
+	if (!/^\s*([A-Za-z]{1,}([\.,] |[-']| ))+[A-Za-z]+\.?\s*$/.test(user.profile.real_name)) {
+	  msg += '>❗️ The full-name field of slack profile must include both your official first and last names without any additional text, while yours is `'+user.profile.real_name+'`.\n';
+	}
+	if (!/[a-z]+[0-9]*/.test(user.profile.display_name)) {
+	  msg += '>❗️ The display-name field of slack profile must be the same as your city of toronto LDAP login ID in lower-cases, while yours is `'+user.profile.display_name+'`.';
+	}
+	if (msg) {
+    bot.api.im.open({
+        user: 'U09K7GCDT'
+    }, (err, res) => {
+        if (err) {
+            bot.botkit.log('Failed to open IM with user', err)
+        }
+        console.log(res);
+        bot.startConversation({
+            user: 'U09K7GCDT',
+            channel: res.channel.id,
+            text: ''
+        }, (err, convo) => {
+            convo.say('*WARNING:* Dear '+user.name+', please correct the following error in your account ASAP, or it will be disabled.\n'+msg)
+        });
+    })
+
+	}
+    });
+
+})
+
+
+/**
 controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I'm here!")
 });
 
-controller.hears('hello', 'direct_message', function (bot, message) {
-    bot.reply(message, 'Hello!');
-});
+controller.hears(['hello', 'hi', 'greetings'], ['direct_mention', 'mention', 'direct_message'], function(bot,message) {
+     bot.reply(message, 'Hello!');
+ });
 
-
-/**
  * AN example of what could be:
  * Any un-handled direct mention gets a reaction and a pat response!
  */
